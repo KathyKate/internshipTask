@@ -1,4 +1,4 @@
-package mk.com.unpacklong.util;
+package mk.com.unpacklong.entity;
 
 import java.io.File;
 import java.util.ArrayList;

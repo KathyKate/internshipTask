@@ -17,9 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import mk.com.unpacklong.util.DecodeParameter;
-import mk.com.unpacklong.util.TransportStream;
+import mk.com.unpacklong.entity.TransportStream;
 import mk.com.unpacklong.util.StringUtils;
-import mk.com.unpacklong.util.Package;
+import mk.com.unpacklong.entity.Package;
 
 
 public class Decode {
