@@ -1,5 +1,6 @@
 package mk.com.unpacklong;
 
+import android.annotation.SuppressLint;
 import android.os.Environment;
 
 import java.io.BufferedInputStream;
@@ -53,8 +54,6 @@ public class Decode {
                         //结束188 和 204 一整个轮回
                         parameter.initParameterAdd(parameter.getPosition());
                     }
-//                    tag==LEN_188?parameter.initParameter(parameter.getPosition()):parameter.initParameterAdd(parameter.getPosition());
-                    continue;
                 }
             }
         }
@@ -77,8 +76,8 @@ public class Decode {
             throw new Exception("该码流无效");
         }
         byte[] container = new byte[ts.getPackageLen()];
-        int from =0 ;
-        int to =0 ;
+        int from ;
+        int to ;
         int p=0;
         //解析本次读取数据中的第一个包
         if(ts.getPackages().size()==0){
@@ -110,24 +109,24 @@ public class Decode {
     public static void readTsFile(TransportStream ts,File destFile) throws Exception {
         InputStream is = null ;
         Writer writer =null;
-        byte[] remains = null;
+        byte[] remains;
         try {
             is = new BufferedInputStream(new FileInputStream(ts.getFile()));
-//            os = new BufferedOutputStream(new FileOutputStream(destFile));
             if(destFile!=null) {
                 writer = new BufferedWriter(new FileWriter(destFile));
             }
             byte[] bytes = new byte[1024*20];
-            int bytesRead = 0;
+            int bytesRead ;
             bytesRead = is.read(bytes);
             judgePackageLength(bytes,bytesRead,ts);
-            remains=decodePackage(bytes,bytesRead,ts,remains);
+            //解第一个包 remains为null
+            remains=decodePackage(bytes,bytesRead,ts,null);
             while((bytesRead = is.read(bytes))!=-1){
                 if(ts.getPackageLen()!=0){
                     remains=decodePackage(bytes,bytesRead,ts,remains);
                 }
                 //以字符的形式写入到文件中
-                if (destFile!=null){
+                if (!(destFile == null)){
                     writer.write(StringUtils.bytesToHexString(bytes));
                     writer.flush();
                 }
@@ -137,12 +136,8 @@ public class Decode {
         } catch (IOException e){
             e.printStackTrace();
         }finally {
-            if(writer != null){
-                writer.close();
-            }
-            if(is != null) {
-                is.close();
-            }
+            if(!(writer == null)) writer.close();
+            if(!(is == null)) is.close();
         }
     }
 
@@ -159,6 +154,7 @@ public class Decode {
     }
 
     //测试本次解码
+    @SuppressLint("DefaultLocale")
     public static void test() throws Exception {
         String[] path = new String[2];
         int i =0;
