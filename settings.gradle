@@ -1,0 +1,3 @@
+include ':unpacklong'
+include ':app'
+rootProject.name = "The Internship Tasks"
