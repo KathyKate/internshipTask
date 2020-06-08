@@ -4,25 +4,35 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import mk.com.unpacklong.util.DecodeParameter;
+
 //@Getter
 //@Setter
 public class TransportStream {
     public static final int LEN_188 = 188;
     public static final int LEN_204 = 204;
-    public static final byte SYN_BYTE =0x47;
-
-    private File file;
+    public static final byte SYNC_BYTE = 0x47;
+    private String file;
     private int position;
     private int packageLen;
+    private byte[] tsData;
     private int size;
     private List<Package> packages = new ArrayList<>();
 
-    public File getFile() {
+    public String getFile() {
         return file;
     }
 
-    public void setFile(File file) {
+    public void setFile(String file) {
         this.file = file;
+    }
+
+    public byte[] getTsData() {
+        return tsData;
+    }
+
+    public void setTsData(byte[] tsData) {
+        this.tsData = tsData;
     }
 
     public int getPosition() {
@@ -56,4 +66,6 @@ public class TransportStream {
     public void setPackages(List<Package> packages) {
         this.packages = packages;
     }
+
+
 }

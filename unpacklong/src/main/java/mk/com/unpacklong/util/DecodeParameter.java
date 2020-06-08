@@ -1,20 +1,23 @@
 package mk.com.unpacklong.util;
 
-public class DecodeParameter{
-    //第一个SYNC_BYTE的位置
+public class DecodeParameter {
+    //The first effective SYNC_BYTE in transport stream
     private int position;
-    //第几个SYNC_BYTE位 （第几个包的起始）
-    private int n;
-    //指针
-    private int p;
-    public DecodeParameter(){}
-    public void initParameterAdd(int position){
-        p = position+1;
-        n = 0;
+    //No.num of SYNC_BYTE in transport stream as the start of package
+    private int num;
+    private int point;
+
+    public DecodeParameter() {
     }
-    public void initParameter(int position){
-        p = position;
-        n = 0;
+
+    public void initParameterAdd(int position) {
+        point = position + 1;
+        num = 0;
+    }
+
+    public void initParameter(int position) {
+        point = position;
+        num = 0;
     }
 
     public int getPosition() {
@@ -25,19 +28,19 @@ public class DecodeParameter{
         this.position = position;
     }
 
-    public int getN() {
-        return n;
+    public int getNum() {
+        return num;
     }
 
-    public void setN(int n) {
-        this.n = n;
+    public void setNum(int num) {
+        this.num = num;
     }
 
-    public int getP() {
-        return p;
+    public int getPoint() {
+        return point;
     }
 
-    public void setP(int p) {
-        this.p = p;
+    public void setPoint(int point) {
+        this.point = point;
     }
 }

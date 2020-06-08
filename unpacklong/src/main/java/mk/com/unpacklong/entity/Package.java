@@ -15,6 +15,7 @@ public class Package {
 
     public Package() {
     }
+
     public Package(byte[] container) {
         //根据传进来的自己数组初始化包的属性
 
