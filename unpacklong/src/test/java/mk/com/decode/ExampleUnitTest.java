@@ -1,4 +1,4 @@
-package mk.com.unpacklong;
+package mk.com.decode;
 
 import org.junit.Test;
 

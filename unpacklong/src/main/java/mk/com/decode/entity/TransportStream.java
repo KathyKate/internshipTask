@@ -1,10 +1,7 @@
-package mk.com.unpacklong.entity;
+package mk.com.decode.entity;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import mk.com.unpacklong.util.DecodeParameter;
 
 //@Getter
 //@Setter

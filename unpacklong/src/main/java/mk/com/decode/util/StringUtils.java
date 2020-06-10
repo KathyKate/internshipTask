@@ -1,4 +1,4 @@
-package mk.com.unpacklong.util;
+package mk.com.decode.util;
 
 public class StringUtils {
     public static String bytesToHexString(byte[] src) {

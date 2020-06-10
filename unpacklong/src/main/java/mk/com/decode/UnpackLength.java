@@ -1,4 +1,4 @@
-package mk.com.unpacklong;
+package mk.com.decode;
 
 import android.annotation.SuppressLint;
 import android.os.Environment;
@@ -6,17 +6,16 @@ import android.os.Environment;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
-import mk.com.unpacklong.util.DecodeParameter;
-import mk.com.unpacklong.entity.TransportStream;
-import mk.com.unpacklong.util.FileUtils;
-import mk.com.unpacklong.entity.Package;
+import mk.com.decode.util.DecodeParameter;
+import mk.com.decode.entity.TransportStream;
+import mk.com.decode.util.DecodeUtils;
+import mk.com.decode.util.FileUtils;
+import mk.com.decode.entity.Package;
 
 
-public class Decode {
-    static TransportStream ts = null;
+public class UnpackLength {
     static final int JUDGE_NUM = 20;
 
     /**
@@ -65,60 +64,37 @@ public class Decode {
     }
 
 
-    /**
-     * @param ts
-     * @return void
-     * @method decodePackage
-     * @description decode transport stream into packet
-     * @date 2020/6/8 19:48
-     */
-    public static void decodePackage(TransportStream ts) throws Exception {
+    public static Package getPackageByPID(TransportStream ts,short target_PID) throws Exception {
         if (ts.getTsData() == null) {
             throw new Exception("该码流还未初始化");
         }
         if (ts.getPackageLen() == 0) {
             throw new Exception("该码流无效");
         }
-        byte[] container;
+        byte[] container ;
         int from = ts.getPosition();
         int to = ts.getPosition() + ts.getPackageLen();
         while (to < ts.getTsData().length) {
             container = Arrays.copyOfRange(ts.getTsData(), from, to);
             from = to;
             to += ts.getPackageLen();
-            ts.getPackages().add(new Package(container));
+            Package packet=new Package(container);
+            if(packet.getPID()==target_PID){
+                return packet;
+            }
         }
+        return null;
     }
 
-    /**
-     * @param srcName
-     * @param destName
-     * @return void
-     * @method analysisTransportStream
-     * @description analysis transport stream and initial this transport stream object
-     * @date 2020/6/8 19:47
-     */
-    public static void analysisTransportStream(String srcName, String destName) throws Exception {
-        TransportStream ts = new TransportStream();
-        srcName = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + srcName;
-        ts.setFile(srcName);
-        if (!(destName == null) && !destName.equals("")) {
-            destName = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + destName;
-        }
-        byte[] tsData = FileUtils.readFile(ts.getFile());
-        ts.setTsData(tsData);
-        FileUtils.writeFileHexContent(tsData, destName);
-        TransportStream t = judgePackageLength(tsData);
-        ts.setPackageLen(t.getPackageLen());
-        ts.setPosition(t.getPosition());
-        decodePackage(ts);
-    }
+
+
+
 
 
     /**
      * @return void
      * @method test
-     * @description test this decode
+     * @description test this decode ,set the in parameter
      * @date 2020/6/8 19:47
      */
     @SuppressLint("DefaultLocale")
@@ -134,7 +110,8 @@ public class Decode {
             i++;
         }
         for (String[] filePath : list) {
-            analysisTransportStream(filePath[0], filePath[1]);
+            TransportStream ts = DecodeUtils.analysisTransportStream(filePath[0]);
+            DecodeUtils.writeTransportStreamHexContent(ts,filePath[1]);
         }
     }
 

@@ -1,4 +1,4 @@
-package mk.com.unpacklong.util;
+package mk.com.decode.util;
 
 public class DecodeParameter {
     //The first effective SYNC_BYTE in transport stream
