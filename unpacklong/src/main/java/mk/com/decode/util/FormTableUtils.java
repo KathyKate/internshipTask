@@ -10,7 +10,7 @@ import mk.com.decode.parameter.InitSectionParameters;
 import mk.com.decode.parameter.InitSectionReturn;
 
 /**
- * @ClassName: Form
+ * @ClassName: FormTableUtils
  * @Description: form the table
  * @Author: xiaolan
  * @Date: 2020/6/11 16:55
@@ -88,6 +88,8 @@ public class FormTableUtils {
         int continuity_counter = 0;
         InitSectionReturn initSecReturn;
         InitSectionParameters initSectionParameters;
+        boolean tag = false;
+
         while (to < parameters.getTs().getTsData().length) {
             packet = new Package(Arrays.copyOfRange(parameters.getTs().getTsData(), from, to));
             from = to;
@@ -105,24 +107,17 @@ public class FormTableUtils {
                     }
                     sectionFlag = true;
                     continuity_counter = (packet.getContinuity_counter() + 1) % Package.CONTINUITY_COUNTER_MAX;
-
-                    initSectionParameters = new InitSectionParameters(parameters.getTs(), parameters.getSection(), packet, sectionPosition, parameters.getSectionNumberRecord());
-                    initSecReturn = initSection(initSectionParameters);
-                    sectionPosition = initSecReturn.getSectionPosition();
-                    if (initSecReturn.isSectionEnd()) {
-                        parameters.getSectionNumberRecord()[parameters.getSection().getSection_number()] = true;
-                        parameters.setSectionCount(parameters.getSectionCount() + 1);
-                        break;
-                    }
+                    tag = true;
                 } else if (sectionFlag && packet.getContinuity_counter() == continuity_counter) {
                     continuity_counter = (continuity_counter + 1) % Package.CONTINUITY_COUNTER_MAX;
+                    tag = true;
 
-                    initSectionParameters = new InitSectionParameters(parameters.getTs(), parameters.getSection(), packet, sectionPosition, parameters.getSectionNumberRecord());
+                }
+                if (tag) {
+                    tag = false;
+                    initSectionParameters = new InitSectionParameters(parameters, packet, sectionPosition);
                     initSecReturn = initSection(initSectionParameters);
-                    sectionPosition = initSecReturn.getSectionPosition();
                     if (initSecReturn.isSectionEnd()) {
-                        parameters.getSectionNumberRecord()[parameters.getSection().getSection_number()] = true;
-                        parameters.setSectionCount(parameters.getSectionCount() + 1);
                         break;
                     }
                 }
@@ -142,21 +137,25 @@ public class FormTableUtils {
         boolean sectionEnd = false;
         int size = 0;
         int sectionStart = getSectionStart(parameters.getPacket());
-        if (parameters.getTs().getPackageLen() == TransportStream.LEN_204) {
+        if (parameters.getParameters().getTs().getPackageLen() == TransportStream.LEN_204) {
             size = -CRC_LEN;
         }
-        size += parameters.getTs().getPackageLen() - sectionStart;
+        size += parameters.getParameters().getTs().getPackageLen() - sectionStart;
 
         /**the last package in section*/
-        if ((parameters.getTs().getPackageLen() - sectionStart) > (parameters.getSection().getSection_length() + 3 - parameters.getSectionPosition())) {
-            size = parameters.getSection().getSection_length() + 3 - parameters.getSectionPosition();
+        if ((parameters.getParameters().getTs().getPackageLen() - sectionStart) > (parameters.getParameters().getSection().getSection_length() + 3 - parameters.getSectionPosition())) {
+            size = parameters.getParameters().getSection().getSection_length() + 3 - parameters.getSectionPosition();
             sectionEnd = true;
         }
 
         /**data input */
         for (int i = sectionStart; i < sectionStart + size; i++) {
-            parameters.getSection().getContainer()[parameters.getSectionPosition()] = parameters.getPacket().getData()[i];
+            parameters.getParameters().getSection().getContainer()[parameters.getSectionPosition()] = parameters.getPacket().getData()[i];
             parameters.setSectionPosition(parameters.getSectionPosition() + 1);
+        }
+        if (sectionEnd) {
+            parameters.getParameters().getSectionNumberRecord()[parameters.getParameters().getSection().getSection_number()] = true;
+            parameters.getParameters().setSectionCount(parameters.getParameters().getSectionCount() + 1);
         }
         return new InitSectionReturn(sectionEnd, parameters.getSectionPosition());
     }

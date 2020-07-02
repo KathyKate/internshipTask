@@ -11,35 +11,28 @@ import mk.com.decode.entity.TransportStream;
  * @Date: 2020/7/2 11:40
  */
 public class InitSectionParameters{
-    TransportStream ts;
-    Section section;
+    GetSectionParameters parameters;
     Package packet;
-    boolean[] sectionNumberRecord;
     int sectionPosition;
+
     public InitSectionParameters() {
     }
-    public InitSectionParameters(TransportStream ts,Section section,Package packet,int sectionPosition,boolean[] sectionNumberRecord) {
-        this.ts = ts;
-        this.section = section;
+    public InitSectionParameters(GetSectionParameters parameters,Package packet,int sectionPosition) {
+        this.parameters = parameters;
         this.packet = packet;
         this.sectionPosition = sectionPosition;
-        this.sectionNumberRecord = sectionNumberRecord;
-    }
-
-    public TransportStream getTs() {
-        return ts;
-    }
-
-    public Section getSection() {
-        return section;
     }
 
     public Package getPacket() {
         return packet;
     }
 
-    public boolean[] getSectionNumberRecord() {
-        return sectionNumberRecord;
+    public GetSectionParameters getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(GetSectionParameters parameters) {
+        this.parameters = parameters;
     }
 
     public int getSectionPosition() {
@@ -48,9 +41,5 @@ public class InitSectionParameters{
 
     public void setSectionPosition(int sectionPosition) {
         this.sectionPosition = sectionPosition;
-    }
-
-    public void setSectionNumberRecord(boolean[] sectionNumberRecord) {
-        this.sectionNumberRecord = sectionNumberRecord;
     }
 }
