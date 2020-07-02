@@ -1,9 +1,9 @@
-package mk.com.decode.util;
+package mk.com.decode.parameter;
 
 public class DecodeParameter {
-    //The first effective SYNC_BYTE in transport stream
+    /**The first effective SYNC_BYTE in transport stream*/
     private int position;
-    //No.num of SYNC_BYTE in transport stream as the start of package
+    /**No.num of SYNC_BYTE in transport stream as the start of package*/
     private int num;
     private int point;
 
@@ -11,7 +11,7 @@ public class DecodeParameter {
     }
 
     public void initParameterAdd(int position) {
-        point = position + 1;
+        point = position ;
         num = 0;
     }
 

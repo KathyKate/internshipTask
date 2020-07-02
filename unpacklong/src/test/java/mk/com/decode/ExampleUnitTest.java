@@ -2,7 +2,11 @@ package mk.com.decode;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import mk.com.decode.entity.TransportStream;
+import mk.com.decode.util.DecodeUtils;
+import mk.com.decode.util.FileUtils;
+import mk.com.decode.util.FormTableUtils;
+import mk.com.decode.util.StringUtils;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -12,6 +16,6 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() {
-        assertEquals(4, 2 + 2);
+
     }
 }

@@ -17,6 +17,16 @@ public class StringUtils {
         return stringBuilder.toString();
     }
 
+    public static String byteToHexString(byte data) {
+        StringBuilder stringBuilder = new StringBuilder();
+        int v = data & 0xFF;
+        String hv = Integer.toHexString(v);
+        if (hv.length() < 2) {
+            stringBuilder.append("0");
+        }
+        stringBuilder.append(hv).append(" ");
+        return stringBuilder.toString();
+    }
     public static byte[] hexStringToBytes(String hexString) {
         if (hexString == null || hexString.equals("")) {
             return null;

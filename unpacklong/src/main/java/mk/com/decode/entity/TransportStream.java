@@ -16,13 +16,6 @@ public class TransportStream {
     private int size;
     private List<Package> packages = new ArrayList<>();
 
-    public String getFile() {
-        return file;
-    }
-
-    public void setFile(String file) {
-        this.file = file;
-    }
 
     public byte[] getTsData() {
         return tsData;
@@ -52,17 +45,8 @@ public class TransportStream {
         return size;
     }
 
-    public void setSize(int size) {
-        this.size = size;
-    }
-
     public List<Package> getPackages() {
         return packages;
     }
-
-    public void setPackages(List<Package> packages) {
-        this.packages = packages;
-    }
-
 
 }

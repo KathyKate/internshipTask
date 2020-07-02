@@ -4,8 +4,6 @@ import android.os.Environment;
 
 import java.io.File;
 import java.util.Arrays;
-
-import mk.com.decode.UnpackLength;
 import mk.com.decode.entity.Package;
 import mk.com.decode.entity.TransportStream;
 
@@ -47,16 +45,13 @@ public class DecodeUtils {
      * @method analysisTransportStream
      * @description give a transport stream file name,initial transport stream object
      * @date 2020/6/10 9:45
-     * @param srcName
+     * @param tsData
      * @return mk.com.decode.entity.TransportStream
      */
-    public static TransportStream analysisTransportStream(String srcName) throws Exception {
+    public static TransportStream analysisTransportStream(byte[] tsData) {
         TransportStream ts = new TransportStream();
-        srcName = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + srcName;
-        ts.setFile(srcName);
-        byte[] tsData = FileUtils.readFile(ts.getFile());
         ts.setTsData(tsData);
-        TransportStream t = UnpackLength.judgePackageLength(tsData);
+        TransportStream t = PackageUtils.judgePackageLength(tsData);
         ts.setPackageLen(t.getPackageLen());
         ts.setPosition(t.getPosition());
         return ts;
