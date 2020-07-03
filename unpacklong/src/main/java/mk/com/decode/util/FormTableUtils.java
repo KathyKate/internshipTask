@@ -169,6 +169,13 @@ public class FormTableUtils {
      */
     public static int getSectionStart(Package packet) {
         int sectionStart = 0;
+        /**
+         * adaptation_field_control is 2-bit field indicates whether this transport stream package header is followed by an adaptation_field or payload
+         * value = 0b00; reserved for future use, payload should be discarded when decoding.
+         * value = 0b01; no adaptation_field, only payload.
+         * value = 0b10; no payload, only adaptation_field.
+         * value = 0b11; behind adaptation_field is payload, in the adaptation_field the first byte is adaptation_field_length.
+         */
         switch (packet.getAdaptation_field_control()) {
             case 0:
             case 2:
