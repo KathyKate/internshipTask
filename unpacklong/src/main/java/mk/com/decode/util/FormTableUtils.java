@@ -1,6 +1,13 @@
 package mk.com.decode.util;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 import mk.com.decode.entity.Package;
 import mk.com.decode.entity.Section;
@@ -27,10 +34,11 @@ public class FormTableUtils {
      * @param targetTable_id
      * @return void
      */
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static void formTable(String file, short targetPid, byte targetTable_id) throws Exception {
         byte[] data = FileUtils.readFile(file);
         TransportStream ts = DecodeUtils.analysisTransportStream(data);
-        getTable(ts, targetPid, targetTable_id);
+        List<Section> sections = getTable(ts, targetPid, targetTable_id);
     }
 
     /**
@@ -42,18 +50,29 @@ public class FormTableUtils {
      * @param targetTable_id
      * @return void
      */
-    public static void getTable(TransportStream ts, short targetPid, byte targetTable_id) {
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static List<Section> getTable(TransportStream ts, short targetPid, byte targetTable_id) {
+        Integer a =8;
+        Integer b=9;
+        a.compareTo(b);
         int lastSectionNumber;
         int sectionCount = 0;
         boolean[] sectionNumberRecord = new boolean[256];
         Section section = new Section();
         GetSectionParameters parameters;
+        List<Section> sections = new ArrayList<>();
+        sections.sort(new Comparator<Section>() {
+            @Override
+            public int compare(Section s1, Section s2) {
+                return (s1.getSection_number() < s2.getSection_number()) ? -1 : ((s1.getSection_number() == s1.getSection_number()) ? 0 : 1);
+            }
+        });
         int from = ts.getPosition();
         int to = ts.getPosition() + ts.getPackageLen();
 
         /**transport stream invalid*/
         if (ts.getTsData() == null) {
-            return;
+            return null;
         }
 
         while (to < ts.getTsData().length) {
@@ -69,6 +88,7 @@ public class FormTableUtils {
             from = to;
             to = from + ts.getPackageLen();
         }
+        return sections;
     }
 
     /**
