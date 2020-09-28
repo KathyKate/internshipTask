@@ -9,6 +9,7 @@
    ts码流是由很多的包组成的，即ts码流是包的集合，而section是ts包的集合；
    在码流中会解析出各种table，这些table是实际业务中需要用到的东西，而table是section的集合；
 2. 其次，要清楚section的组成，以下是section头部字段：
+```java
        public Section(byte[] container, int sectionStart){
            this.table_id = container[sectionStart];
            this.section_syntax_indicator = (byte) ((container[sectionStart + 1] >> 7) & 0x1);
@@ -22,6 +23,7 @@
            this.section_number = container[sectionStart + 6];
            this.last_section_number = container[sectionStart + 7];
        }
+```
 3. 接下来就是思考section组成的流程：
    一个个包的获取，首先判断包是不是要找的包(PID)，其次这个包能否作为section的包，如果是首包，判断table_id是不是要寻找的。确定了这个包的payload可以作为section的数据部分，将数据部分装入section的container中。
    
@@ -29,17 +31,17 @@
 核心方法：
 
 - formTable() 作为解目标table中所有section的入口方法，给定ts文件的路径，将其解析为一个TransportStream对象，以及入参的简单处理(这里的入参不需要处理...)
-
+```java
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static List<Section> formTable(String file, short targetPid, byte targetTable_id) throws Exception {
         byte[] data = FileUtils.readFile(file);
         TransportStream ts = DecodeUtils.analysisTransportStream(data);
         return getTable(ts, targetPid, targetTable_id);
     }
-
+```
 - getTable() 获取给定table_id的所有section。通过调用下一层方法getSection()一次获取一个section，而每一个section都有section_number来对其进行编号，那么想要获取所有section就需要用一个字段来标记哪些section是被获取过的(因为码流中的数据很多都是重复的，对于一些section在解析过程中，可能会存在重复解析的情况)。用sectionCount字段来标记目前拿到了多少个section，从而判断section是不是都拿完了。
   table的解出来的所有section都存入了List<Section>中，并重写了list的sort()，根据section的section_number字段来进行排序。
-
+```java
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static List<Section> getTable(TransportStream ts, short targetPid, byte targetTable_id) {
         Integer a =8;
@@ -81,12 +83,12 @@
         return sections;
     }
     
-
+```
 
 
 - getSection()获取一个完整的section，ts码流以ts包的形式一个个读取出来，并判断这个包是不是section的一部分。首先分析这个包是能否作为要找section的首包（payload_unit_start_indicator=1）；如果不是首包，继续读取下一个进行判断。如果是要组建section的首包，需要判断section从包的何处开始组建。找到首包后，继续找section剩余的包，根据 tsread 软件中显示的section数据，可以发现，section所有的包的continuity_counter字段是自增的，文档中有提到说section中的package是连续的，或许是这个意思，根据continuity_counter字段找section剩余的包。
-
-    public static int getSection(GetSectionParameters parameters) {
+```java
+public static int getSection(GetSectionParameters parameters) {
         boolean sectionFlag = false;
         int sectionStart;
         int sectionPosition = 0;
@@ -135,10 +137,10 @@
     }
     
 
-
+```
 
 - initSection()将符合条件package的payload部分装入section的container中。装入的时候需要注意，这个package能装入的数据有哪些。并且204的包和188的包相比多的是后面16位的校验码，不需要装入section。在这个方法中还对本次获取的section进行判断，这个section是否已经把数据填充完毕。
-
+```java
     public static InitSectionReturn initSection(InitSectionParameters parameters) {
         boolean sectionEnd = false;
         int size = 0;
@@ -166,7 +168,7 @@
         return new InitSectionReturn(sectionEnd, parameters.getSectionPosition());
     }
     
-
+```
 
 
 - getSectionStart()标记package中payload的开始位置。package的adaption_field_control判断包的包头后的数据情况，以此来判断payload的实际开始位置。
@@ -174,7 +176,7 @@
   01：没有adaption_field， 只有payload
   10：只有adaption，没有payload
   11：adaption_field后面是payload
-
+```java
     public static int getSectionStart(Package packet) {
         int sectionStart = 0;
         switch (packet.getAdaptation_field_control()) {
@@ -192,7 +194,7 @@
         }
         return sectionStart;
     }
-
+```
 感想:
 
 对于入门新手，组建section看似是最难的，也是最关键的，其实理解了section的组成，再结合tsread软件把section拆分，逆推他是怎么组成的，会发现所有的问题都是小cese啦。
